@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <tuple>
 
 class Estudiante {
 public:
@@ -16,9 +17,10 @@ class Curso {
 public:
     std::string codigoCurso;
     std::string nombreCurso;
+    std::string semestre;
 
-    Curso(std::string codigoCurso, std::string nombreCurso)
-        : codigoCurso(codigoCurso), nombreCurso(nombreCurso) {
+    Curso(std::string codigoCurso, std::string nombreCurso, std::string semestre)
+        : codigoCurso(codigoCurso), nombreCurso(nombreCurso), semestre(semestre) {
     }
 };
 
@@ -46,6 +48,8 @@ public:
     }
 };
 
+//Vectores con informacion para la realizacion de pruebas en terminal, esto no daña el funcionamiento
+
 // Vector Estudiantes
 std::vector<Estudiante> estudiantes = {
     Estudiante("Sebastian", "123"),
@@ -54,12 +58,12 @@ std::vector<Estudiante> estudiantes = {
     Estudiante("Bryan", "147")
 };
 
-//Vectores con informacion para la realizacion de pruebas en terminal, esto no daña el funcionamiento
-
 // Vector Cursos
 std::vector<Curso> cursos = {
-    Curso("H1", "Arquitectura")
+    Curso("H1", "Arquitectura", "4"),
+    Curso("H1", "Arquitectura", "3")
 };
+
 
 // Vector Sesiones
 std::vector<Sesion> sesiones = {
@@ -69,16 +73,16 @@ std::vector<Sesion> sesiones = {
 
 // Vector Asistencias
 std::vector<Asistencia> asistencias = {
-    Asistencia(1, "123", 1),  // Sebastián llegó
-    Asistencia(1, "456", 2)   // Alejandro llegó tarde
+    Asistencia(1, "123", 1),  // Sebastián puntual como siempre
+    Asistencia(1, "456", 2)   // Alejandro llego a las y 15 tarde
 };
 
 // Vector Inscripciones
-std::vector<std::pair<std::string, std::string>> inscripciones = {
-    std::make_pair("123", "H1"),
-    std::make_pair("456", "H1"),
-    std::make_pair("789", "H1"),
-    std::make_pair("147", "H1")
+std::vector<std::tuple<std::string, std::string, std::string>> inscripciones = {
+    std::make_tuple("123", "H1", "4"),
+    std::make_tuple("456", "H1", "4"),
+    std::make_tuple("789", "H1", "4"),
+    std::make_tuple("147", "H1", "4")
 };
 
 // Vector estudiantes NO LLEGARON
@@ -140,64 +144,78 @@ int main() {
 
             case 3: {
                 // Registrar curso
-                std::string codigo, nombre;
+                std::string codigo, nombre, semestre;
                 std::cout << "Ingrese el codigo del curso: ";
                 std::cin >> codigo;
                 std::cout << "Ingrese el nombre del curso: ";
                 std::cin >> nombre;
+                std::cout << "Ingrese el semestre del curso: ";
+                std::cin >> semestre;
 
-                cursos.emplace_back(Curso(codigo, nombre));
+                cursos.emplace_back(Curso(codigo, nombre, semestre));
                 std::cout << "Curso registrado con exito." << std::endl;
                 break;
             }
 
+
             case 4: {
-                // Consultar curso
+                // Consultar curso por código y semestre
                 std::string codigo;
+                std::string semestre;
                 std::cout << "Ingrese el codigo del curso: ";
                 std::cin >> codigo;
+                std::cout << "Ingrese el semestre del curso: ";
+                std::cin >> semestre;
 
                 bool cursoEncontrado = false;
                 for (int i = 0; i < cursos.size(); i++) {
-                    if (cursos[i].codigoCurso == codigo) {
-                        std::cout << "Codigo: " << cursos[i].codigoCurso << ", Nombre: " << cursos[i].nombreCurso << std::endl;
+                    if (cursos[i].codigoCurso == codigo && cursos[i].semestre == semestre) {
+                        std::cout << "Codigo: " << cursos[i].codigoCurso << ", Nombre: " << cursos[i].nombreCurso << ", Semestre: " << cursos[i].semestre << std::endl;
                         cursoEncontrado = true;
                         break;
                     }
                 }
 
                 if (!cursoEncontrado) {
-                    std::cout << "Curso no encontrado." << std::endl;
+                    std::cout << "Curso no encontrado en el semestre especificado." << std::endl;
                 }
                 break;
             }
 
+
+
             case 5: {
-                // Registrar un estudiante a un curso
-                std::string documentoEstudiante, codigoCurso;
+                // Registrar un estudiante a un curso con semestre
+                std::string documentoEstudiante, codigoCurso, semestre;
                 std::cout << "Ingrese el documento del estudiante: ";
                 std::cin >> documentoEstudiante;
                 std::cout << "Ingrese el codigo del curso: ";
                 std::cin >> codigoCurso;
+                std::cout << "Ingrese el semestre: ";
+                std::cin >> semestre;
 
-                inscripciones.emplace_back(documentoEstudiante, codigoCurso);
-                std::cout << "Estudiante inscrito en el curso con exito." << std::endl;
+                // Aquí asumimos que inscripciones es una estructura que almacena documento, código de curso y semestre
+                inscripciones.emplace_back(documentoEstudiante, codigoCurso, semestre);
+                std::cout << "Estudiante inscrito en el curso con éxito en el semestre " << semestre << "." << std::endl;
                 break;
             }
 
             case 6: {
-                // Consultar el listado de estudiantes a un curso
+                // Consultar el listado de estudiantes a un curso y semestre
                 std::string codigoCurso;
+                std::string semestreCurso;
                 std::cout << "Ingrese el codigo del curso: ";
                 std::cin >> codigoCurso;
+                std::cout << "Ingrese el semestre del curso: ";
+                std::cin >> semestreCurso;
 
                 bool encontrado = false;
-                for (int i = 0; i < inscripciones.size(); i++) {
-                    if (inscripciones[i].second == codigoCurso) {
+                for (const auto& inscripcion : inscripciones) {
+                    if (std::get<1>(inscripcion) == codigoCurso && std::get<2>(inscripcion) == semestreCurso) {
                         encontrado = true;
-                        for (int x = 0; x < estudiantes.size(); x++) {
-                            if (estudiantes[x].documentoEstudiante == inscripciones[i].first) {
-                                std::cout << "- " << estudiantes[x].nombreEstudiante << " , Documento: " << estudiantes[x].documentoEstudiante <<std::endl;
+                        for (const auto& estudiante : estudiantes) {
+                            if (estudiante.documentoEstudiante == std::get<0>(inscripcion)) {
+                                std::cout << "- " << estudiante.nombreEstudiante << " , Documento: " << estudiante.documentoEstudiante << std::endl;
                                 break;
                             }
                         }
@@ -205,10 +223,11 @@ int main() {
                 }
 
                 if (!encontrado) {
-                    std::cout << "No hay estudiantes inscritos en este curso." << std::endl;
+                    std::cout << "No hay estudiantes inscritos en este curso y semestre." << std::endl;
                 }
                 break;
             }
+
 
             case 7: {
                 // Registrar sesion
@@ -271,14 +290,12 @@ int main() {
                 estudiantesNoLlegaron.clear();
 
                 for (const auto& inscripcion : inscripciones) {
-                    std::string documentoEstudiante = inscripcion.first;
-                    std::string codigoCurso = inscripcion.second;
+                    std::string documentoEstudiante = std::get<0>(inscripcion);
+                    std::string codigoCurso = std::get<1>(inscripcion);
 
-                    // Comprobar si el estudiante tiene asistencia registrada en el curso
                     bool estudianteLlego = false;
                     for (const auto& asistencia : asistencias) {
                         if (asistencia.documentoEstudiante == documentoEstudiante && asistencia.codigoAsistencia != 3) {
-
                             estudianteLlego = true;
                             break;
                         }
@@ -287,10 +304,9 @@ int main() {
                         estudiantesNoLlegaron.push_back(documentoEstudiante);
                     }
                 }
-                std::cout << "Los estudiantes que NO LLEGARON han sido registrados " << std::endl;
+                std::cout << "Los estudiantes que NO LLEGARON han sido registrados." << std::endl;
                 break;
             }
-
 
             case 11: {
                 // Consultar cuantos estudiantes NO LLEGARON
