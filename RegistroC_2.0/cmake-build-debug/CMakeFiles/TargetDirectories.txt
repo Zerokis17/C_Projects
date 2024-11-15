@@ -1,0 +1,3 @@
+C:/Users/2106s/OneDrive/Documentos/C++ Projects/RegistroC/cmake-build-debug/CMakeFiles/RegistroC.dir
+C:/Users/2106s/OneDrive/Documentos/C++ Projects/RegistroC/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/2106s/OneDrive/Documentos/C++ Projects/RegistroC/cmake-build-debug/CMakeFiles/rebuild_cache.dir
